@@ -7,5 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Matthew Brisebois",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "knex": "^0.12.5",
+    "mysql": "^2.11.1",
+    "phantomjs-prebuilt": "^2.1.13",
+    "promise": "^7.1.1",
+    "pythonify": "^0.2.0"
+  }
 }

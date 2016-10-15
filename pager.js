@@ -7,13 +7,24 @@ try {
     page.open('https://en.wikipedia.org/wiki/List_of_firearms', function(status) {
 	var d = page.evaluate(function() {
 	    function nodeInfo(e) {
+		// Expected format
+		//   ALFA-PROJ Model 9241 (Czech Republic - ALFA-PROJ - Unknown Date - Double-Action Revolver - 9×19mm Parabellum: Full-length model of...)
+		//   Name		  (Extra													  )
+		
 		var name,links,extra;
 		var $e		= $(e);
-		var text	= $e.text();
 
+		// The <li> element can contain any number of sub-element including the <ul> list of
+		// variants.  We need to isolate the text that belongs to the current firearm by
+		// removing the child elements.
 		extra		= $e.clone().children().remove().end().text();
+
+		// Usually the name is wrapped in <a> tags and sometime split into multiple tags.
+		// Those would be removed from the extra data so we must isolate it differently.
+		var text	= $e.text();
 		name		= text.split(' (')[0];
-		
+
+		// Gather all the links found in the current firearm data
 		var $a		= $e.find('> a');
 		if ($a.length) {
 		    links	= [];
@@ -35,7 +46,7 @@ try {
 		$guns.each(function(i) {
 		    var g	= nodeInfo(this);
 		    g.category	= cat;
-		    g.mods	= getGuns(this);
+		    g.mods	= getGuns(this, cat);
 		    guns.push(g);
 		});
 		return guns;
@@ -44,13 +55,29 @@ try {
 	    var manufacturers	= [];
 	    var $manufacturers	= $('#mw-content-text > ul > li');
 
+	    // Expected HTML hierarchy
+	    // #mw-content-text
+	    //     ul > li:		Manufacturer (sometimes is a firearm with no sub-list)
+	    //         ul > li:		Type
+	    //             ul > li:	Firearm
 	    $manufacturers.each(function(i) {
 		var m		= nodeInfo(this);
+		m.firearms	= [];
 		var $cats	= $('> ul > li', this);
 		$cats.each(function(i) {
-		    var cat	= nodeInfo(this).name;
-		    m.firearms	= getGuns(this, cat);
+		    // If a category has an <a> tag then it is actually a weapon
+		    if ($('> a', this).length)
+			return;
+		    
+		    var cat	= $(this).clone().children().remove().end().text();
+		    $.merge(m.firearms, getGuns(this, cat));
 		});
+
+		// If no firearms were found it might be because they are not separated by
+		// categories.
+		if (m.firearms.length === 0)
+		    m.mods	= getGuns(this);
+		
 		manufacturers.push(m);
 	    });
 	    
