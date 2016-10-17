@@ -1,0 +1,71 @@
+#!/usr/bin/env node
+// -*- mode: javascript -*-
+
+var logger		= require('bunyan').createLogger;
+var Promise		= require('promise');
+var program		= require('commander');
+var router		= require('./router.js');
+var knex		= require('./connect.js');
+
+var log			= logger({
+    name: "WeaponsDB",
+    level: 'trace'
+});
+
+function route(path, data) {
+    return new Promise(function(f,r) {
+	var endpoint	= router.route(path);
+	if (endpoint === false)
+	    r(false);
+	knex.transaction(function(trx) {
+	    function error(e) {
+		r(e);
+		trx.rollback();
+	    }
+	    
+	    endpoint.execute({
+		data: data,
+		knex: function(t) {
+		    return knex(t).transacting(trx);
+		},
+	    }).then(function (result) {
+		f(result);
+		trx.commit();
+	    }, error).catch(error);
+	});
+    });
+}
+
+
+function collect(val, memo) {
+    memo.push(val);
+    return memo;
+}
+
+program
+    .version('0.0.1')
+    .option('-a, --auth [name]', 'Add the specified type of cheese [marble]');
+
+program
+    .command('api <path>')
+    .option('-f, --format [type]', 'Choose the output format: json (default), yaml, xml', 'json')
+    .action(function (path, options) {
+	route(path, {}).then(function(d) {
+	    console.log(JSON.stringify(d,null,4));
+	    process.exit(0);
+	}, function(e) {
+	    log.error(e);
+	    process.exit(1);
+	});
+    });
+
+// program
+//     .command('echo <text>')
+//     .option('-f, --from [name]', 'Add the specified type of cheese [marble]')
+//     .action(function (text, options) {
+// 	console.log(text, program.auth, options.format, options.from);
+//     });
+
+router.ready = function() {
+    program.parse(process.argv);
+};

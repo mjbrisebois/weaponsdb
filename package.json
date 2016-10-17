@@ -1,19 +1,27 @@
 {
-  "name": "weaponsdb.com",
-  "version": "1.0.0",
-  "description": "Internet Weapon Database",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Matthew Brisebois",
-  "license": "ISC",
-  "dependencies": {
-    "jquery": "^3.1.1",
-    "knex": "^0.12.5",
-    "mysql": "^2.11.1",
-    "phantomjs-prebuilt": "^2.1.13",
-    "promise": "^7.1.1",
-    "pythonify": "^0.2.0"
-  }
+    "name": "weaponsdb.com",
+    "version": "1.0.0",
+    "description": "Internet Weapon Database",
+    "main": "index.js",
+    "scripts": {
+	"test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Matthew Brisebois",
+    "license": "MIT",
+    "repository" : {
+	"type" : "git",
+	"url" : "https://github.com/mjbrisebois/weaponsdb"
+    },
+    "dependencies": {
+	"bunyan": "^1.8.1",
+	"chaosrouter": "^0.2.17",
+	"commander": "^2.9.0",
+	"jquery": "^3.1.1",
+	"knex": "^0.12.5",
+	"mysql": "^2.11.1",
+	"phantomjs-prebuilt": "^2.1.13",
+	"promise": "^7.1.1",
+	"pythonify": "^0.2.0",
+	"restruct-data": "^0.3.5"
+    }
 }

@@ -1,0 +1,22 @@
+{
+    "__table__": "weapons",
+    "__structure__": {
+	"count": "= countDistinct(this.$parent, 'weapons_id')",
+	"data": {
+	    "< weapons_id": "file:weapon.json"
+	}
+    },
+    ":id": {
+	"__base__": "..",
+	"__joins__": [
+	    ["documents",	["work_order_documents.document_id", "documents.id"] ],
+	    ["document_tags",	["documents.id", "document_tags.document_id"] ],
+	    ["document_attrs",	["documents.id", "document_attrs.document_id"] ],
+	    ["files",		["documents.file_id", "files.id"] ],
+	    ["users",		["files.user_id", "uploader.id"], "uploader" ]
+	],
+	"__structure__": {
+	    "data": "file:weapon.json"
+	}
+    }
+}
